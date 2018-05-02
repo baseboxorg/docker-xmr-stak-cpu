@@ -9,10 +9,6 @@ jobs:
       - checkout
       - setup_remote_docker
 
-    steps:
-      - checkout
-      - setup_remote_docker
-
       - restore_cache:
           keys:
             - v1-{{ .Branch }}
