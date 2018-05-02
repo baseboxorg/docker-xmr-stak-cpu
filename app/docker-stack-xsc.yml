@@ -6,10 +6,10 @@ services:
       - WALLET_ADDRESS=anybucket@gmail.com
       - POOL_PASSWORD=x
       - POOL_ADDRESS=xmr.pool.minergate.com:45700
-      - XXCORES=1
+      - XXCORES=16
       - XXAUTO_THREAD_CONFIG=true
-      - XXTHREAD_CONFIG={"low_power_mode":false,"no_prefetch":true,"affine_to_cpu":0},
+      - XXTHREAD_CONFIG={"low_power_mode":false,"no_prefetch":true,"affine_to_cpu":0},{"low_power_mode":false,"no_prefetch":true,"affine_to_cpu":1},{"low_power_mode":false,"no_prefetch":true,"affine_to_cpu":2},
       - DAEMON_MODE=true
     deploy:
-      replicas: 3
+      replicas: 1
 
