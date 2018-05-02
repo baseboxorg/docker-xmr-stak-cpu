@@ -18,17 +18,11 @@ jobs:
             pip install \
               docker-compose==1.21.1 \
               awscli==1.15.12
-
-    steps:
-      - checkout
-      - setup_remote_docker
-
       - restore_cache:
           keys:
             - v1-{{ .Branch }}
           paths:
             - /caches/${IMAGE}.tar
-
       - run:
           name: Load Docker image layer cache
           command: |
@@ -52,7 +46,7 @@ jobs:
           name: Deploy freshly built image(s) to Docker Hub
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              docker login -u $DOCKER_USER --password-stdin $DOCKER_PASS
+              docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
               docker tag ${IMAGE} "${DOCKER_USER}/${IMAGE}:${CIRCLE_SHA1}"
               docker tag ${IMAGE} "${DOCKER_USER}/${IMAGE}:${VTAG}"
               docker tag ${IMAGE} "${DOCKER_USER}/${IMAGE}:latest"
@@ -62,7 +56,7 @@ jobs:
             fi
 workflows:
   version: 2
-  xmr-syak-cpu:
+  xmr-stak-cpu:
     jobs:
       - build:
           context: PJ_ITNSD
