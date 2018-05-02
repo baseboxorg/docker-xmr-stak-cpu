@@ -14,7 +14,7 @@ RUN echo "@testing http://nl.alpinelinux.org/alpine/edge/testing" >> //etc/apk/r
 RUN apk add --no-cache \
       libmicrohttpd-dev \
       openssl-dev \
-#      hwloc-dev@testing \
+      hwloc-dev@testing \
       build-base \
       cmake \
       coreutils \
@@ -30,6 +30,7 @@ RUN git clone https://github.com/fireice-uk/xmr-stak.git \
     \
     && cp -t /app bin/xmr-stak \
     && chmod 777 -R /app
+
 RUN apk del --no-cache --purge \
       libmicrohttpd-dev \
       openssl-dev \
@@ -47,10 +48,11 @@ FROM alpine:edge
 WORKDIR /app
 
 RUN echo "@testing http://nl.alpinelinux.org/alpine/edge/testing" >> //etc/apk/repositories
+
 RUN apk add --no-cache \
       libmicrohttpd \
       openssl \
-#      hwloc@testing \
+      hwloc@testing \
       python2 \
       py2-pip \
       libstdc++ \
@@ -60,5 +62,5 @@ RUN apk add --no-cache \
 COPY --from=build app .
 
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
-CMD ["xmr-stak-cpu"]
 
+CMD ["xmr-stak-cpu"]
