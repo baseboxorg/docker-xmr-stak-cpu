@@ -53,7 +53,7 @@ jobs:
 
 workflows:
   version: 2
-  intensecoind:
+  alpine-xmr-stak-cpu:
     jobs:
       - build:
           context: PJ_ITNSD
