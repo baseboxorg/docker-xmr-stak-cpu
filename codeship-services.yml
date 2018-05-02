@@ -1,0 +1,5 @@
+app:
+  build:
+    image: baseboxorg/alpine-xmr-stak-cpu
+    dockerfile: Dockerfile
+  cached: true
