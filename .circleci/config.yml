@@ -1,0 +1,68 @@
+version: 2
+jobs:
+  #working_directory: /app
+  build:
+    context: PJ_ITNSD
+    docker:
+      - image: docker:18.04.0-git
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --no-cache \
+              py-pip=9.0.1-r1
+            pip install \
+              --upgrade pip
+            pip install \
+              docker-compose==1.21.1 \
+              awscli==1.15.12
+
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      - restore_cache:
+          keys:
+            - v1-{{ .Branch }}
+          paths:
+            - /caches/${IMAGE}.tar
+
+      - run:
+          name: Load Docker image layer cache
+          command: |
+            set +o pipefail
+            docker load -i /caches/${IMAGE}.tar | true
+      - run:
+          name: Build the image(s) from docker
+          command: |
+            docker build --cache-from=${IMAGE} -t ${IMAGE} .
+      - run:
+          name: Save Docker image layer cache
+          command: |
+            mkdir -p /caches
+            docker save -o /caches/${IMAGE}.tar ${IMAGE}
+      - save_cache:
+          key: v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - /caches/${IMAGE}.tar
+
+      - run:
+          name: Deploy freshly built image(s) to Docker Hub
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+              docker tag ${IMAGE} "${DOCKER_USER}/${IMAGE}:${CIRCLE_SHA1}"
+              docker tag ${IMAGE} "${DOCKER_USER}/${IMAGE}:${VTAG}"
+              docker tag ${IMAGE} "${DOCKER_USER}/${IMAGE}:latest"
+              docker push "${DOCKER_USER}/${IMAGE}:${CIRCLE_SHA1}"
+              docker push "${DOCKER_USER}/${IMAGE}:${VTAG}"
+              docker push "${DOCKER_USER}/${IMAGE}:latest"
+            fi
+workflows:
+  version: 2
+  intensecoind:
+    jobs:
+      - build:
+          context: PJ_ITNSD
