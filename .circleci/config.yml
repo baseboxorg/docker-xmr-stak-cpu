@@ -15,8 +15,8 @@ jobs:
     - run:
         name: Load Docker image layer cache
         command: |
-            set +o pipefail
-            docker load -i /caches/alpine-xmr-stak-cpu.tar | true
+          set +o pipefail
+          docker load -i /caches/alpine-xmr-stak-cpu.tar | true
     - run:
         name: Build the image(s) from docker
         command: |
@@ -43,9 +43,10 @@ jobs:
             docker push "${DOCKER_USER}/alpine-xmr-stak-cpu:latest"
           fi
 
+
 workflows:
   version: 2
-  alpine-xmr-stak-cpu:
+  xmr-stak-cpu:
     jobs:
       - build:
           context: PJ_ITNSD
