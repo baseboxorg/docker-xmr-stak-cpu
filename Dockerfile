@@ -10,17 +10,18 @@ COPY app /app
 
 WORKDIR /usr/local/src
 
-RUN apt-get install -qq --no-install-recommends -y \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -qq --no-install-recommends -y \
       build-essential \
       ca-certificates \
       libhwloc-dev \
       libmicrohttpd-dev \
       libssl-dev \
       cmake \
-      git 
-   
+      git
+
 RUN git clone https://github.com/fireice-uk/xmr-stak.git \
-    && cd /xmr-stak \
+    && cd xmr-stak \
     && git checkout tags/${XMR_STAK_VERSION} -b build  \
     && sed -i 's/constexpr double fDevDonationLevel.*/constexpr double fDevDonationLevel = 0.0;/' xmrstak/donate-level.hpp \
     \
@@ -29,8 +30,8 @@ RUN git clone https://github.com/fireice-uk/xmr-stak.git \
     \
     && cp -t /app bin/xmr-stak \
     && chmod 777 -R /app
- 
- RUN apt-get purge -y -qq \
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get purge -y -qq \
       build-essential \
       cmake \
       libhwloc-dev \
@@ -44,18 +45,25 @@ RUN git clone https://github.com/fireice-uk/xmr-stak.git \
 ###
 FROM ubuntu:18.04
 
+# ENV PATH /usr/local/lib:$PATH
+
 WORKDIR /app
 
-RUN apt-get install -qq --no-install-recommends -y \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -qq --no-install-recommends -y \
       ca-certificates \
       libhwloc-dev \
       libmicrohttpd-dev \
       libssl-dev \
-      python2 \
-      py2-pip \
-      libstdc++-6-dev \
-    && pip install --upgrade pip \
-    && pip install envtpl
+      python-dev \
+      python-setuptools \
+      python-wheel \
+      python-pip \
+      libstdc++-6-dev
+
+# RUN export PATH="/usr/local/lib:$PATH" \
+#RUN pip install --upgrade pip \
+RUN pip install envtpl
 
 COPY --from=build app .
 
