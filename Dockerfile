@@ -4,7 +4,7 @@
 FROM alpine:edge AS build
 #FROM alpine:edge
 
-ENV XMR_STAK_VERSION 2.3.0
+ENV XMR_STAK_VERSION 2.4.3
 
 COPY app /app
 
