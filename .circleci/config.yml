@@ -62,7 +62,7 @@ jobs:
             fi
 workflows:
   version: 2
-  intensecoind:
+  xmr-syak-cpu:
     jobs:
       - build:
           context: PJ_ITNSD
