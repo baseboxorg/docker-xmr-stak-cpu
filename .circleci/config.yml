@@ -52,7 +52,7 @@ jobs:
           name: Deploy freshly built image(s) to Docker Hub
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+              docker login -u $DOCKER_USER -p $DOCKER_PASS
               docker tag ${IMAGE} "${DOCKER_USER}/${IMAGE}:${CIRCLE_SHA1}"
               docker tag ${IMAGE} "${DOCKER_USER}/${IMAGE}:${VTAG}"
               docker tag ${IMAGE} "${DOCKER_USER}/${IMAGE}:latest"
