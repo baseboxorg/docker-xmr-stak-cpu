@@ -4,7 +4,7 @@ jobs:
   build:
     context: PJ_ITNSD
     docker:
-      - image: docker:18.03.0-git
+      - image: docker:18.04.0-git
     steps:
       - checkout
       - setup_remote_docker
@@ -12,12 +12,12 @@ jobs:
           name: Install dependencies
           command: |
             apk add --no-cache \
-              py-pip=9.0.1-r1
+              py-pip
             pip install \
               --upgrade pip
             pip install \
-              docker-compose==1.20.1 \
-              awscli==1.14.66
+              docker-compose \
+              awscli
 
     steps:
       - checkout
