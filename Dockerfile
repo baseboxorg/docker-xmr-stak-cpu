@@ -59,8 +59,9 @@ RUN apt-get update \
       python-setuptools \
       python-wheel \
       python-pip \
-      libstdc++-6-dev \
-    && pip install --upgrade pip \
+      libstdc++-6-dev
+
+RUN pip install --upgrade pip \
     && pip install envtpl
 
 COPY --from=build app .
