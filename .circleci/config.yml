@@ -1,0 +1,64 @@
+
+version: 2
+jobs:
+  #working_directory: /app
+  build:
+    context: PJ_ITNSD
+    docker:
+      - image: docker:18.03.0-git
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --no-cache \
+              py-pip
+            pip install \
+              --upgrade pip
+            pip install \
+              docker-compose \
+              awscli
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      - restore_cache:
+          keys:
+            - v1-{{ .Branch }}
+          paths:
+            - /caches/${IMAGE}.tar
+
+      - run:
+          name: Load Docker image layer cache
+          command: |
+            set +o pipefail
+            docker load -i /caches/${IMAGE}.tar | true
+      - run:
+          name: Build the image(s) from docker
+          command: |
+            docker build --cache-from=${IMAGE} -t ${IMAGE} .
+      - run:
+          name: Save Docker image layer cache
+          command: |
+            mkdir -p /caches
+            docker save -o /caches/${IMAGE}.tar ${IMAGE}
+      - save_cache:
+          key: v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - /caches/${IMAGE}.tar
+
+      - run:
+          name: Deploy freshly built image(s) to Docker Hub
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "ubuntu" ]; then
+              docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+              docker tag ${IMAGE} "${DOCKER_USER}/${IMAGE}:ubuntu"
+              docker push "${DOCKER_USER}/${IMAGE}:ubuntu"
+            fi
+workflows:
+  version: 2
+  xmr-stak:
+    jobs:
+      - build:
+          context: PJ_ITNSD

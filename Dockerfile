@@ -10,7 +10,7 @@ COPY app /app
 
 WORKDIR /usr/local/src
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update \
+RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -qq --no-install-recommends -y \
       build-essential \
       ca-certificates \
@@ -49,7 +49,7 @@ FROM ubuntu:18.04
 
 WORKDIR /app
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update \
+RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -qq --no-install-recommends -y \
       ca-certificates \
       libhwloc-dev \
@@ -59,11 +59,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
       python-setuptools \
       python-wheel \
       python-pip \
-      libstdc++-6-dev
-
-# RUN export PATH="/usr/local/lib:$PATH" \
-#RUN pip install --upgrade pip \
-RUN pip install envtpl
+      libstdc++-6-dev \
+    && pip install --upgrade pip \
+    && pip install envtpl
 
 COPY --from=build app .
 
