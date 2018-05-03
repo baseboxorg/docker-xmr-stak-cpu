@@ -61,8 +61,9 @@ RUN apt-get update \
       python-pip \
       libstdc++-6-dev
 
-RUN pip install --upgrade pip \
-    && pip install envtpl
+#RUN export PATH="/usr/local/lib:$PATH" \
+
+RUN pip install envtpl
 
 COPY --from=build app .
 
