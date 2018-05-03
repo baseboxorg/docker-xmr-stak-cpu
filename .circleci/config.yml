@@ -1,4 +1,4 @@
-#version: 2
+version: 2.2
 jobs:
   #working_directory: /app
   build:
@@ -8,8 +8,10 @@ jobs:
   steps:
     - checkout
     - setup_remote_docker
+
     - restore_cache:
-        key: v1-{{ .Branch }}
+        keys:
+          - v1-{{ .Branch }}
         paths:
           - /caches/alpine-xmr-stak-cpu.tar
     - run:
@@ -17,28 +19,31 @@ jobs:
         command: |
           set +o pipefail
           docker load -i /caches/alpine-xmr-stak-cpu.tar | true
+
     - run:
         name: Build the image(s) from docker
         command: |
           docker build --cache-from=alpine-xmr-stak-cpu -t alpine-xmr-stak-cpu .
+
     - run:
         name: Save Docker image layer cache
         command: |
           mkdir -p /caches
           docker save -o /caches/alpine-xmr-stak-cpu.tar alpine-xmr-stak-cpu
+
     - save_cache:
         key: v1-{{ .Branch }}-{{ epoch }}
         paths:
           - /caches/alpine-xmr-stak-cpu.tar
+
     - run:
         name: Deploy freshly built image(s) to Docker Hub
         ommand: |
           if [ "${CIRCLE_BRANCH}" == "master" ]; then
             docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
-            docker tag alpine-xmr-stak-cpu "${DOCKER_USER}/alpine-xmr-stak-cpu:${CIRCLE_SHA1}"
+
             docker tag alpine-xmr-stak-cpu "${DOCKER_USER}/alpine-xmr-stak-cpu:${VTAG}"
             docker tag alpine-xmr-stak-cpu "${DOCKER_USER}/alpine-xmr-stak-cpu:latest"
-            docker push "${DOCKER_USER}/alpine-xmr-stak-cpu:${CIRCLE_SHA1}"
             docker push "${DOCKER_USER}/alpine-xmr-stak-cpu:${VTAG}"
             docker push "${DOCKER_USER}/alpine-xmr-stak-cpu:latest"
           fi
